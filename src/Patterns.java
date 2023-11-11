@@ -46,22 +46,22 @@ public class Patterns {
 			put(30, -100);
 			
 			//ooom = 29
-			put(29, Integer.MAX_VALUE);
+			put(29, 100);
 			//oomo = 13
-			put(28, Integer.MAX_VALUE);
+			put(28, 100);
 			//omoo = 26
-			put(26, Integer.MAX_VALUE);
+			put(26, 100);
 			//mooo = 22
-			put(22, Integer.MAX_VALUE);
+			put(22, 100);
 			
 			//mmmo = 16
-			put(16, -70);
+			put(16, -100);
 			//mmom = 17
-			put(17, -60);
+			put(17, -100);
 			//momm = 11
-			put(19, -60);
+			put(19, -100);
 			//ommm = 23
-			put(23, -70);
+			put(23, -100);
 			
 //			//mm__ = 12
 //			put(12, 20);

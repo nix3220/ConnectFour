@@ -3,6 +3,7 @@
 // Date: May 13th, 2016
 // This project extends the Jpanel class. In order to draw items on this panel you need use the Graphics2D's methods.
 // Update these comments by writing when, who and how you modified this class.
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -36,6 +37,11 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 	
 	private boolean gameStarted = false;
 	private boolean playAgainstAI = false;
+	private boolean thinking = false;
+	
+	public static int numCheckCompl = 0;
+	public static int numChecks = 0;
+	private static boolean mouseDown = false;
 	
 	// method: ConnectFourPanel Constructor
 	// description: This 'method' runs when a new instance of this class in instantiated.  It sets default values  
@@ -109,6 +115,13 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 			g2.drawString(player + " won the game", 150, 300);
 		}
 		
+		if(thinking) {
+			g2.setColor(Color.black);
+			g2.fillRect(225, 235, 250, 100);
+			g2.setColor(Color.yellow);
+			g2.drawString("thinking...", 250, 300);
+		}
+		
 		if(!gameStarted) {
 			Color c = new Color(0, 0, 0, 0.85f);
 			g2.setColor(c);
@@ -118,6 +131,15 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 			int width = g2.getFontMetrics().stringWidth(s);
 			g2.drawString(s, this.getWidth()/1.3f-width, this.getHeight()/2);
 		}
+		
+		if(this.getMousePosition() != null && gameStarted && !gameOver) {
+			g2.setColor(Color.yellow);
+			int x = this.getMousePosition().x/100;
+			g2.setStroke(new BasicStroke(10));
+			if(!mouseDown) g2.drawOval(x*100+10, board.availableIndex(x)*100+10, 80, 80);
+			else g2.fillOval(x*100+10, board.availableIndex(x)*100+10, 80, 80);
+		}
+		this.repaint();
 	}
 	
 	// Check to see if x or o have won the game.
@@ -206,6 +228,7 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 	 * this method is the method that actually adds the piece to the board
 	 */
 	public void addPiece(int column){
+		thinking = false;
 		int row = board.availableIndex(column);
 		board.place(new Piece(row, column, turn));
 		this.repaint();
@@ -215,8 +238,11 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 		else {
 			turn *=-1;
 			if(turn == AI_PLAYER && playAgainstAI) {
-				int col = AI.evaluate(AI.copy(board));
-				addPiece(col);
+				thinking = true;
+				new Thread(() -> {
+					int col = AI.evaluate(AI.copy(board));
+					addPiece(col);
+				}).start();
 			}
 		}
 	}
@@ -239,7 +265,7 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		mouseDown = true;
 	}
 
 	/*
@@ -258,6 +284,7 @@ public class ConnectFourPanel extends JPanel implements MouseListener, KeyListen
 		}
 		int x = e.getX()/100;
 		addPiece(x);
+		mouseDown = false;
 		this.repaint();
 	}
 

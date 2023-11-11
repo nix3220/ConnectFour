@@ -69,8 +69,12 @@ public class AI {
 			p.setPlayer(AI_PLAYER);
 			Board newboard = copy(b);
 			newboard.place(p);
-			evaluations.add(new Pair<Integer, Integer>(minimax(copy(newboard), 1, false, -Integer.MAX_VALUE, Integer.MAX_VALUE).first, p.getCol()));
+			int depth = 6;
+			ConnectFourPanel.numChecks = (int)Math.pow(7, depth);
+			ConnectFourPanel.numCheckCompl = 0;
+			evaluations.add(new Pair<Integer, Integer>(minimax(copy(newboard), depth, false, -Integer.MAX_VALUE, Integer.MAX_VALUE).first, p.getCol()));
 		}
+		Helpers.printArray(evaluations.toArray());
 		int index = indexOfHighest(listOfFirst(evaluations));
 		return evaluations.get(index).second;
 	}
@@ -345,6 +349,7 @@ public class AI {
 	public static Pair<Integer, Integer> minimax(Board board, int depth, boolean max, int alpha, int beta) {
 		List<Piece> valid = board.validPlacingPositions();
 		int value = 0;
+		ConnectFourPanel.numCheckCompl++;
 		if(depth == 0 || isTerminalNode(board)) {
 			Pair<Boolean, Piece> winning = isWinningBoard(board);
 			if(winning.first) {
@@ -352,7 +357,7 @@ public class AI {
 				if (winning.second.getPlayer() == HUMAN_PLAYER){
 					return new Pair<Integer, Integer>(-Integer.MAX_VALUE, null);
 				}
-				else if(winning.second.getPlayer() == AI.AI_PLAYER) {
+				else if(winning.second.getPlayer() == AI_PLAYER) {
 					return new Pair<Integer, Integer>(Integer.MAX_VALUE, null);
 				}
 				else {
